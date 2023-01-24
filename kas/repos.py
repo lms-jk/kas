@@ -40,12 +40,13 @@ class Repo:
         Represents a repository in the kas configuration.
     """
 
-    def __init__(self, name, url, path, refspec, layers, patches,
+    def __init__(self, name, url, path, refspec, tracking, layers, patches,
                  disable_operations):
         self.name = name
         self.url = url
         self.path = path
         self.refspec = refspec
+        self.tracking = tracking
         self._layers = layers
         self._patches = patches
         self.operations_disabled = disable_operations
@@ -120,6 +121,8 @@ class Repo:
         typ = repo_config.get('type', 'git')
         refspec = repo_config.get('refspec',
                                   repo_defaults.get('refspec', None))
+        tracking = repo_config.get('tracking',
+                                  repo_defaults.get('tracking', None))
         if refspec is None and url is not None:
             logging.error('No refspec specified for repository "%s". This is '
                           'only allowed for local repositories.', name)
@@ -144,7 +147,7 @@ class Repo:
             disable_operations = True
 
         if typ == 'git':
-            return GitRepo(name, url, path, refspec, layers, patches,
+            return GitRepo(name, url, path, refspec, tracking, layers, patches,
                            disable_operations)
         if typ == 'hg':
             return MercurialRepo(name, url, path, refspec, layers, patches,
